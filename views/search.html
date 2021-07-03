@@ -1,0 +1,155 @@
+<form id="search-app" class="form-inline my-lg-0" style="display: inline; float: right;">
+  <input v-on:keyup.down="down()" v-on:keyup.up="up()" v-on:keydown.enter.prevent="enter" v-on:keydown.tab.prevent="tab" v-on:keydown.tab.prevent="esc"
+    v-model="search_query" lazy class="form-control mr-sm-2"
+    type="search" placeholder="Search" aria-label="Search" debounce="1000"
+  >
+  <button style="display: none;" type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    search
+  </button>
+  <div class="dropdown-menu" style="left:auto; width: 350px; margin-left: -157px;">
+    <a v-for="result in results" v-bind:class="createClass(result.current)" v-bind:href="createLink(result.keyword)">{{result.keyword}}</a>
+  </div>
+</form>
+
+
+<script>
+  console.log("starting search");
+
+  var showing_results = false;
+  var search_app = new Vue({
+    el: '#search-app',
+    data: {
+			search_query: '',
+      results : []
+    },
+		methods: {
+      createLink : function(keyword){
+        return "/search?query=" + keyword;
+      },
+      down : function(){
+        var any_current = false;
+        for (var i = 0; i < search_app.results.length; i++) {
+          if(search_app.results[i].current == true){
+            any_current = true;
+            search_app.results[i].current = false;
+            if(search_app.results.length - 1 > i){
+                search_app.results[i + 1].current = true;
+            } else {
+              search_app.results[0].current = true;
+            }
+            break;
+          }
+        }
+        if(any_current == false){
+          search_app.results[0].current = true;
+        }
+      },
+      up : function(){
+        var any_current = false;
+        for (var i = 0; i < search_app.results.length; i++) {
+          if(search_app.results[i].current == true){
+            any_current = true;
+            search_app.results[i].current = false;
+            if(i - 1 >= 0){
+                search_app.results[i - 1].current = true;
+            } else {
+              search_app.results[search_app.results.length - 1].current = true;
+            }
+            break;
+          }
+        }
+        if(any_current == false){
+          search_app.results[0].current = true;
+        }
+      },
+      enter : function(){
+        var any_current = false;
+        var current = 0;
+        for (var i = 0; i < search_app.results.length; i++) {
+          if(search_app.results[i].current == true){
+            any_current = true;
+            current = i;
+            break;
+          }
+        }
+        if(any_current == true){
+          console.log("Redirecting to page")
+          window.location.href = "/search?query=" + search_app.results[current].keyword;
+        } else {
+          window.location.href = "/search?query=" + search_app.search_query;
+        }
+      },
+      tab : function(){
+        var any_current = false;
+        var current = 0;
+        for (var i = 0; i < search_app.results.length; i++) {
+          if(search_app.results[i].current == true){
+            any_current = true;
+            current = i;
+            break;
+          }
+        }
+        if(any_current == true){
+          search_app.search_query = search_app.results[current].keyword;
+          search_app.results = [];
+        }
+      },
+      esc : function(){
+        search_app.results = [];
+      },
+      createClass : function(isCurrent){
+        if(isCurrent) return "dropdown-item active"
+        else return "dropdown-item "
+      }
+		},
+    watch: {
+      search_query : function(val){
+        this.search_query = val;
+        console.log(this.search_query)
+        if(val != "" && val.length > 2){
+          console.log("Searching for \'" + val + "\'");
+          var req = new XMLHttpRequest();
+        	req.overrideMimeType("application/json");
+        	req.open('GET', "/api/keywords?query=" + val, true);
+        	req.onload  = function() {
+            search_app.results = [];
+        	   var jsonResponse = JSON.parse(req.responseText);
+             if(jsonResponse.keywords.length > 1){
+               for (var i = 0; i < jsonResponse.keywords.length; i++) {
+                 var result = jsonResponse.keywords[i];
+                 result.current = false;
+                 if(result.keyword.length > 30) result.keyword = result.keyword.substring(0,30) + "...";
+                 search_app.results.push(result);
+               }
+             }
+             console.log("Found " + search_app.results.length + " results")
+             //console.log(search_app.results)
+             if (search_app.results.length > 10) search_app.results = search_app.results.slice(0, 10);
+
+             if(search_app.results.length == 0){
+               if(showing_results){
+                 $('.dropdown-toggle').dropdown('toggle');
+                 showing_results = false;
+                 search_app.results = []
+                 console.log("closing")
+               }
+             }
+             if(search_app.results.length > 0){
+               if(!showing_results){
+                 $('.dropdown-toggle').dropdown('toggle');
+                 showing_results = true;
+               }
+             }
+        	};
+        	req.send(null);
+        } else {
+          if(showing_results){
+            $('.dropdown-toggle').dropdown('toggle');
+            showing_results = false;
+            search_app.results = []
+          }
+        }
+      }
+    }
+  });
+</script>

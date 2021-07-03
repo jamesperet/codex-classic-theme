@@ -1,0 +1,294 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Projects - Codex</title>
+	<%- include('../views/includes.html') %>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="/libraries/code/moment.min.js"></script>
+  <link rel="stylesheet" href="/libraries/code/font-awesome-4.7.0/css/font-awesome.min.css">
+  <style>
+		.project-links {
+			position: absolute;
+    	bottom: 20px;
+		}
+		.circle {
+			border-radius: 50%;
+			width: 10px;
+			height: 10px;
+			margin-top: 10px;
+			margin-left: 10px;
+			/* width and height can be anything, as long as they're equal */
+		}
+		.badge-in-progress {background-color: #005AD2; }
+		.badge-done {background-color: #4AAF45; }
+		.badge-broken {background-color: #D03B3B; }
+		.badge-archived {background-color: #EC9E34; }
+		.pull-left { float: left; }
+		.pull-right { float: right; }
+		.clearfix {clear: both; }
+
+  </style>
+
+</head>
+
+<body>
+  <div >
+    <%- include('../views/nav.html') %>
+    <div id="app" class="container">
+
+      <div class="row row-offcanvas row-offcanvas-right first">
+        <div class="col-12 col-md-9">
+
+          <p class="float-right hidden-md-up">
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="offcanvas">Toggle nav</button>
+          </p>
+          <div class="jumbotron">
+            <h1>
+              <span class="pull-left">{{project.title}}</span>
+            <div class="circle pull-left" v-bind:class="project.status" style="margin-top: 17px;"></div></h1>
+            <div style="clear: both"></div>
+            <p>{{project.description}}</p>
+          </div>
+          <div class="row" v-if="project.text != undefined && project.text != ''">
+            <div class="col-12" style="margin-bottom: 15px;">
+              <h2>Description</h2>
+              <div v-html="project.text"></div>
+            </div>
+          </div>
+					<div class="row" v-if="project.files != 0">
+            <div class="col-12" style="margin-bottom: 15px;">
+              <h2>Files</h2>
+              <ul>
+                <li v-for="file in project.files" class="favcon-link">
+                  <i class="fa fa-file-o" aria-hidden="true"></i> <a v-bind:href="file.url">{{file.title}}</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="row" v-if="project.videos != 0">
+            <div class="col-12" style="margin-bottom: 15px;">
+              <h2>Videos</h2>
+              <ul>
+                <li v-for="video in project.videos" class="favcon-link">
+                  <a v-bind:href="video.url">
+                    <img height="16" width="16" v-bind:src="getFaviconLink(video.url)" />{{video.title}}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="row" v-if="project.repositories != 0">
+            <div class="col-12" style="margin-bottom: 15px;">
+              <h2>Repositories</h2>
+              <ul>
+                <li v-for="repo in project.repositories" class="favcon-link">
+                  <a v-bind:href="repo.url">
+                    <img height="16" width="16" v-bind:src="getFaviconLink(repo.url)" />{{repo.name}}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="row" v-if="project.local_copies != 0">
+            <div class="col-12" style="margin-bottom: 15px;">
+              <h2>Local Copies</h2>
+              <ul>
+                <li v-for="copy in project.local_copies" class="favcon-link">
+                  <i class="fa fa-folder-o" aria-hidden="true" v-if="copy.format == 'open'"></i>
+                  <i class="fa fa-file-archive-o" aria-hidden="true" v-if="copy.format == 'zip'"></i>
+                  <i class="fa fa-file-o" aria-hidden="true" v-if="copy.format == 'file'"></i>
+                  <code>{{copy.location}}</code><span> {{copy.size}} – <small><i>{{formatDate(copy.last_backup)}}</i></small></span>
+                </li>
+              </ul>
+            </div>
+          </div><!--/row-->
+          <div class="row" v-if="project.aws_backups != 0">
+            <div class="col-12" style="margin-bottom: 15px;">
+              <h2>AWS Glacier</h2>
+              <ul>
+                <li v-for="bkp in project.aws_backups">
+                  <code>{{bkp.url}}</code>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="row" v-if="screenshots.length != 0">
+            <div class="col-12" style="margin-bottom: 15px;">
+              <h2>Screenshots</h2>
+              <ul>
+                <li v-for="img in screenshots" style="padding-right: 25px; padding-bottom: 25px; padding-left: 0px; list-style: none; margin-left: -20px;" class="col-md-4 col-sm-4 float-left">
+                  <div class="card" >
+                    <a v-bind:href="'screenshots/' + img">
+                      <img class="card-img-top img-fluid"  v-bind:src="'screenshots/' + img" style='height: 150px; width: 100%; object-fit: cover' alt="">
+                    </a>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+
+          
+
+        </div><!--/span-->
+
+        <div class="col-6 col-md-3 sidebar-offcanvas" id="sidebar">
+          <dl>
+            <dt>Status</dt>
+            <dd><h3><span v-html="progress_status(project.status)"></span></h3></dd>
+            <dt v-if="project.website != undefined && project.website != ''">Website</dt>
+            <dd v-if="project.website != undefined && project.website != ''">
+							<a v-bind:href="project.website">{{project.website}}</a>
+						</dd>
+            <dt>Size</dt>
+            <dd>{{project.size}}</dd>
+            <dt>Tags</dt>
+            <dd><span v-for="tag in project.tags" class="badge badge-default" style="margin-right: 5px;">{{tag}}</span></dd>
+            <dt>{{project.contact_types}}</dt>
+            <dd><span v-for="(contact, index) in project.contacts"><a v-bind:href="contact.url">{{contact.name}}</a><span v-if="project.contacts.length - 1 > index">, </span></span></dd>
+          </dl>
+        </div><!--/span-->
+      </div>
+
+    </div>
+
+
+		<%- include('../views/footer.html') %>
+  </div>
+</body>
+
+<script>
+  var time = new Date();
+  var date = time.getFullYear();
+
+  //var prefix = "http://localhost:5000/mdwiki.html#!"
+	var prefix = "/"
+
+	var nav_links = [
+		{ title: "Projects", link: prefix + "projects/index.html", description: "A complete List of all my projects." },
+    { title: "Research", link: prefix + "research/index.html", description: "Research in many diferent topics." },
+		{ title: "Programming", link: prefix + "research/programming/index.md", description: "Resources for programming languages and topics." },
+		{ title: "Products", link: prefix + "libraries/products/index.md", description: "A wishlist of weird things I would like to own." }
+	]
+
+	var projects = [
+
+	]
+
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
+  // Divide content in 3 columns
+  var projects_content_1 = [];
+  var projects_content_2 = [];
+  var projects_content_3 = [];
+  for (var i = 0; i < projects.length; i++) {
+    if(i <= projects.length/3){
+      projects_content_1.push(projects[i])
+    }
+    if(i <= (projects.length/3)*2 && i > projects.length/3){
+      projects_content_2.push(projects[i])
+    }
+    if(i <= (projects.length) && i > (projects.length/3)*2){
+      projects_content_3.push(projects[i])
+    }
+  }
+	var searchText = "";
+
+  // Vue App
+  var app = new Vue({
+    el: '#app',
+    data: {
+      project: {},
+      screenshots: []
+    },
+		methods: {
+	    getLink: function (path, file) {
+	      return "/projects/" + path + "/" + file
+	    },
+      projectStatus: function(status){
+        if(status != undefined){
+          return capitalizeFirstLetter(status.replace("-", " "))
+        } else {
+          return status
+        }
+      },
+      progress_status: function(status){
+  			switch(status){
+  				case "in-progress":
+  					return "<span class=\"badge badge-pill badge-primary\">In progress</span>";
+  				case "done":
+  					return "<span class=\"badge badge-pill badge-success\">Done</span>";
+  				case "pending":
+  					return "<span class=\"badge badge-pill badge-warning\">Pending</span>";
+          case "archived":
+    				return "<span class=\"badge badge-pill badge-default\">Archived</span>";
+          case "broken":
+    				return "<span class=\"badge badge-pill badge-danger\">Broken</span>";
+  			}
+  		},
+      getFaviconLink: function (url) {
+				return "http://s2.googleusercontent.com/s2/favicons?domain_url=" + url;
+	    },
+      formatDate: function(d){
+        return moment(d).fromNow();;
+      }
+	  },
+	  computed: {
+	    filteredProjects() {
+	      return this.projects.filter(project => {
+					if(project.name.toLowerCase().includes(this.searchText.toLowerCase())){
+						return true
+					}
+					if(project.data.status.toLowerCase().includes(this.searchText.toLowerCase())){
+						return true
+					}
+					if(project.data.description.toLowerCase().includes(this.searchText.toLowerCase())){
+						return true
+					}
+	        return false
+	      })
+	    }
+	  },
+    created() {
+      axios.get(`project.json`)
+      .then(response => {
+        // JSON responses are automatically parsed.
+        console.log("Data loaded")
+        this.project = response.data
+        axios.get("screenshots/?list=true")
+        .then(response => {
+          console.log("Screenshots loaded")
+          var list = []
+          if(response.data == undefined) return;
+          for (let i = 0; i < response.data.files.length; i++) {
+            const file = response.data.files[i];
+            var ext = file.substr(file.length - 3).toLowerCase();
+            if(ext == 'png' || ext == 'jpg' || ext == 'gif'){
+              list.push(file);
+            }
+          }
+          console.log(list);
+          this.screenshots = list
+        })
+        .catch(e => {
+          console.log(e)
+        })
+      })
+      .catch(e => {
+        console.log(e)
+      })
+      
+      
+    }
+  })
+</script>
+
+<script src="/Libraries/code/process-links.js"></script>
+
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Journal</title>
+	<%- include('includes.html') %>
+	<script src="https://unpkg.com/vue"></script>
+	<script src="https://unpkg.com/vue-masonry-css"></script>
+	
+</head>
+
+<body>
+  <div id="app">
+    <%- include('nav.html') %>
+    <div class="container">
+		<div class="row first">
+			<div class="col-12-md">
+			</div>
+		</div>
+	</div>
+
+	<div class="container" id="accordion3" role="tablist" v-if="posts.length > 0">
+      	<div class="row">
+			<div class="col-12-md" style="margin-bottom: 20px;">
+				<div class="page-header">
+					<h1>
+						<a data-toggle="collapse" data-parent="#accordion3" href="#collapseReferences" aria-expanded="true" aria-controls="collapseReferences" class="internal-link">
+							References ({{posts.length}})
+						</a>
+					</h1>
+				</div>
+				<div id="collapseReferences" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
+					<masonry :cols="4" :gutter="30" >
+						<div class="card" style="margin-bottom: 30px;" v-for="(item, index) in posts" :key="index">
+							<a v-bind:href="img_url(item, 'refs')" target="_Blank"><img class="card-img-top" v-bind:src="img_url(item, 'refs')" style="width: 100%; height: 100%;"></a>
+							<p style="margin-bottom: 1px; padding-left: 4px; padding-right: 4px;">{{item}}</p>
+						</div>
+					</masonry>
+				</div>
+			</div>
+      	</div>
+    </div>
+
+			
+
+
+    <%- include('footer.html') %>
+
+  </div>
+</body>
+
+<script>
+
+	var prefix = "/"
+	var post_list = [];
+	var renders_list = [];
+	var data = {};
+
+	// Functions
+
+	var getReferences = function(){
+		var req = new XMLHttpRequest();
+		req.overrideMimeType("application/json");
+		req.open('GET', "?list=true", true);
+		req.onload  = function() {
+			var jsonResponse = JSON.parse(req.responseText);
+			post_list = jsonResponse.files;
+			console.log(post_list)
+			app.refresh_posts(post_list);
+			// do something with jsonResponse
+		};
+		req.send(null);
+	}
+
+  // Vue App
+  var app = new Vue({
+    el: '#app',
+    data: {
+			posts: post_list,
+			renders: renders_list,
+			data: data
+    },
+		methods: {
+	    	refresh_posts: function (post_list) {
+				for (var i = 0; i < post_list.length; i++) {
+					var parts = post_list[i].split(".");
+					if(parts[parts.length - 1] != "png" && parts[parts.length - 1] != "jpg" && parts[parts.length - 1] != "gif" ){
+						post_list.splice(i, 1);
+					}
+				}
+				app.posts = post_list.reverse();
+	    	},
+			img_url: function(item, folder){
+				return folder + "/" + item;
+			},
+	  },
+		beforeCreate() {
+			getReferences();
+		}
+  })
+
+</script>
+
+<script src="/Libraries/code/process-links.js"></script>
+
+
+</html>

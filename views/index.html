@@ -1,0 +1,120 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+	<title>Codex</title>
+	<%- include('includes.html') %>
+	<!-- <script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+	</script> -->
+	<script type="text/x-mathjax-config;executed=true">
+	MathJax.Hub.Config({
+	    "HTML-CSS": {
+	        preferredFont: "TeX",
+	        availableFonts: ["STIX", "TeX"],
+	        linebreaks: {
+	            automatic: true
+	        },
+	        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+	    },
+	    SVG: {
+	        linebreaks: {
+	            automatic: true
+	        }
+	    },
+	    CommonHTML: {
+	        linebreaks: {
+	            automatic: true
+	        }
+	    },
+	    tex2jax: {
+	        element: null,
+	        inlineMath: [
+	            ['[itex]', '[/itex]'],
+	            ['##', '##']
+	        ],
+	        displayMath: [
+	            ['[tex]', '[/tex]'],
+	            ['$$', '$$']
+	        ],
+	        skipTags: ["script", "noscript", "style", "textarea", "pre", "code"],
+	        processEscapes: true,
+	        ignoreClass: "tex2jax_ignore|dno"
+	    },
+	    TeX: {
+	        noUndefined: {
+	            attributes: {
+	                mathcolor: "red",
+	                mathbackground: "#FFEEEE",
+	                mathsize: "90%"
+	            }
+	        },
+	        Macros: {
+	            href: "{}"
+	        },
+	        equationNumbers: {
+	            autoNumber: "AMS"
+	        }
+	    },
+	    messageStyle: "none"
+	});
+
+	</script>
+	<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML-full">
+	</script>
+
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+	<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+	<script>hljs.initHighlightingOnLoad();</script>
+
+</head>
+
+<body>
+  <div>
+    <%- include('nav.html') %>
+	</div>
+	<div id="app">
+    <div class="container">
+      <div class="row first">
+        <div class="col-12-md">
+          <%- body %>
+        </div>
+      </div>
+    </div>
+
+    <%- include('footer.html') %>
+
+  </div>
+</body>
+
+<script>
+  var time = new Date();
+  var date = time.getFullYear();
+
+  var prefix = "/"
+
+	var nav_links = [
+		{ title: "Projects", link: prefix + "projects/index.html", description: "A complete List of all my projects." },
+    { title: "Research", link: prefix + "research/index.html", description: "Research in many diferent topics." },
+		{ title: "Programming", link: prefix + "research/programming/index.md", description: "Resources for programming languages and topics." },
+		{ title: "Products", link: prefix + "libraries/products/index.md", description: "A wishlist of weird things I would like to own." }
+	]
+
+  var app = new Vue({
+    el: '#app',
+    data: {
+      message: 'Hello Vue!',
+      date: date,
+			nav_links: nav_links
+    }
+  })
+</script>
+
+<script src="/Libraries/code/process-links.js"></script>
+<script>mermaid.initialize({startOnLoad:true});</script>
+
+</html>

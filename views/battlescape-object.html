@@ -1,0 +1,360 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Journal</title>
+	<%- include('includes.html') %>
+	<script src="https://unpkg.com/vue"></script>
+	<script src="https://unpkg.com/vue-masonry-css"></script>
+	
+</head>
+
+<body>
+  <div id="app">
+    <%- include('nav.html') %>
+    <div class="container">
+		<div class="row first">
+			<div class="col-12-md">
+				<div class="jumbotron"style="padding: 1rem 1rem;">
+					<h1 class="display-5">
+						{{data.name}}
+						<small>{{get_faction(data.faction, data.type)}}</small>
+						<span style="float: right; font-size: 22px; padding-top: 12px;" v-html="progress_status(data.status)"></span>
+					</h1>
+					<hr>
+					<p class="lead">{{data.description}}</p>
+					<span v-if="data.resources != null">Cost:
+						<span v-if="data.resources.minerals != null">
+							<img src="/projects/battlescape/game-design-document/minerals.png" style="display: inline; padding-bottom: 3px;"> {{data.resources.minerals}}
+							<span v-if="data.resources.credits != null || data.resources.population != null">/</span>
+						</span>
+						<span v-if="data.resources.credits != null">
+							<img src="/projects/battlescape/game-design-document/credits.png" style="display: inline; padding-bottom: 3px;"> {{data.resources.credits}}
+							<span v-if="data.resources.population != null">/</span>
+						</span>
+						<span v-if="data.resources.population != null">
+							<img src="/projects/battlescape/game-design-document/population.png" style="display: inline; padding-bottom: 3px;"> {{data.resources.population}}
+						</span><br>
+					</span>
+					<span v-if="data.category != null && data.category != ''">Category: {{data.category}}<br></span>
+					<span v-if="data.time != null && data.time != ''">Build time: {{data.time}}s<br></span>
+					<span v-if="data.hp != null && data.hp != ''">Stats: {{data.hp}} HP</span>
+					<span v-if="data.energy != null && data.energy != ''"> / {{data.energy}} energy</span>
+					<span v-if="data.armor != null"> / {{data.armor}} armor<br>
+					<span v-if="data.can_create != null && data.can_create.length > 0">Can create: 
+						<span v-for="(obj, index) in data.can_create" :key="index">
+							<a v-bind:href="'../' + obj.folder + '/index.html'">{{obj.name}}</a><span v-if="(data.can_create.length -2) > index">, </span><span v-if="(data.can_create.length -2) == index"> and </span>
+						</span>
+						<br>
+					</span>
+					<span v-if="data.weapons != null && data.weapons.length > 0"> 
+						<span v-for="(weapon, index) in data.weapons" :key="index">
+							Weapon<span v-if="data.weapons.length > 1"> {{index + 1}}</span>: {{weapon.name}} / damage: {{weapon.damage}} / range: {{weapon.minrange}}-{{weapon.maxrange}} / reload: {{weapon.reload}}s / type: {{weapon.type}}
+							<span v-if="data.weapons.length > 1 && index != data.weapons.length - 1"><br></span>
+						</span>
+						<br>
+					</span>
+					<span v-if="data.abilities != null && data.abilities.length > 0">Abilities: 
+						<span v-for="(obj, index) in data.abilities" :key="index" >
+							<a v-bind:href="'../' + obj.folder + '/index.html'" data-toggle="tooltip" data-placement="top" v-bind:title="obj.description">{{obj.name}}</a><span v-if="(data.abilities.length -2) > index">, </span><span v-if="(data.abilities.length -2) == index"> and </span>
+						</span>
+						<br>
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container" id="accordion3" role="tablist" v-if="renders.length > 0">
+			<div class="row">
+			  <div class="col-12-md" style="margin-bottom: 20px;">
+				  <div class="page-header">
+					  <h2>
+						  <a data-toggle="collapse" data-parent="#accordion4" href="#collapseRenders" aria-expanded="true" aria-controls="collapseRenders" class="internal-link">
+							  Renders ({{renders.length}})
+						  </a>
+					  </h2>
+				  </div>
+				  <div id="collapseRenders" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
+					  <masonry :cols="4" :gutter="30" >
+						  <div class="card" style="margin-bottom: 30px;" v-for="(item, index) in renders" :key="index">
+							  <a v-bind:href="img_url(item, 'renders')" target="_Blank"><img class="card-img-top" v-bind:src="img_url(item, 'renders')" style="width: 100%; height: 100%;"></a>
+							  <p style="margin-bottom: 1px; padding-left: 4px; padding-right: 4px;">{{item}}</p>
+						  </div>
+					  </masonry>
+				  </div>
+			  </div>
+			</div>
+	  </div>
+
+	<div class="container" id="accordion3" role="tablist" v-if="posts.length > 0">
+      	<div class="row">
+			<div class="col-12-md" style="margin-bottom: 20px;">
+				<div class="page-header">
+					<h2>
+						<a data-toggle="collapse" data-parent="#accordion3" href="#collapseReferences" aria-expanded="true" aria-controls="collapseReferences" class="internal-link">
+							References ({{posts.length}})
+						</a>
+					</h2>
+				</div>
+				<div id="collapseReferences" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
+					<masonry :cols="4" :gutter="30" >
+						<div class="card" style="margin-bottom: 30px;" v-for="(item, index) in posts" :key="index">
+							<a v-bind:href="img_url(item, 'refs')" target="_Blank"><img class="card-img-top" v-bind:src="img_url(item, 'refs')" style="width: 100%; height: 100%;"></a>
+							<p style="margin-bottom: 1px; padding-left: 4px; padding-right: 4px;">{{item}}</p>
+						</div>
+					</masonry>
+				</div>
+			</div>
+      	</div>
+    </div>
+
+		<div class="container" v-if="data.tasks != null" id="accordion1" role="tablist">
+				<div class="row">
+					<div class="col-12-md" style="margin-bottom: 20px;">
+						<div class="page-header">
+							<h2>
+								<a data-toggle="collapse" data-parent="#accordion1" href="#collapseTasks" aria-expanded="true" aria-controls="collapseTasks" class="internal-link">
+									Tasks ({{completed_tasks(data.tasks)}})
+								</a>
+							</h2>
+						</div>
+						<div id="collapseTasks" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
+							<ul class="list-unstyled" style="padding-left: 18px;">
+								<li v-for="(task, index) in data.tasks" :key="index">
+									<form v-if="task.done">
+										<input type="checkbox" id="coding" checked> <del>{{task.description}}</del> <span v-if="task.author != null" class="badge badge-pill badge-secondary" style="background-color: #868e96;">{{task.author}}</span> <span v-if="task.effort != null" class="badge badge-pill badge-warning" style="background-color: #868e96;">{{task.effort}}h</span>
+									</form>
+									<form v-else>
+											<input type="checkbox" id="coding"> {{task.description}} <span v-if="task.author != null" class="badge badge-pill badge-primary">{{task.author}}</span> <span v-if="task.effort != null" class="badge badge-pill badge-warning">{{task.effort}}h</span>
+										</form>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="container" v-if="data.voice_over != null" id="accordion2" role="tablist">
+				<div class="row">
+					<div class="col-12-md" style="margin-bottom: 20px;">
+						<div class="page-header">
+							<h2>
+								<a data-toggle="collapse" data-parent="#accordion2" href="#collapseVoiceOver" aria-expanded="true" aria-controls="collapseVoiceOver" class="internal-link">
+									Voice Over ({{data.voice_over.phrases.length}})
+								</a>
+							</h2>
+						</div>
+						<div id="collapseVoiceOver" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
+							<p v-if="data.voice_over.description != null && data.voice_over.description != ''">{{data.voice_over.description}}</p>
+							<ul>
+								<li v-for="(phrase, index) in data.voice_over.phrases" :key="index">
+									<b>{{phrase.action}}</b> – {{phrase.text}}
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>	
+
+			<div class="container" v-if="data.animations != null && data.animations.length > 0" id="accordion5" role="tablist">
+				<div class="row">
+					<div class="col-12-md" style="margin-bottom: 20px;">
+						<div class="page-header">
+							<h2>
+								<a data-toggle="collapse" data-parent="#accordion5" href="#collapseAnimations" aria-expanded="true" aria-controls="collapseAnimations" class="internal-link">
+									Animations ({{data.animations.length}})
+								</a>
+							</h2>
+						</div>
+						<div id="collapseAnimations" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
+							<ul>
+								<li v-for="(animation, index) in data.animations" :key="index">
+									<code>{{animation.name}}</code> – {{animation.description}}
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="container" v-if="data.sfx != null && data.sfx.length > 0" id="accordion6" role="tablist">
+				<div class="row">
+					<div class="col-12-md" style="margin-bottom: 20px;">
+						<div class="page-header">
+							<h2>
+								<a data-toggle="collapse" data-parent="#accordion5" href="#collapseSFX" aria-expanded="true" aria-controls="collapseSFX" class="internal-link">
+									Sound Effects ({{data.sfx.length}})
+								</a>
+							</h2>
+						</div>
+						<div id="collapseSFX" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
+							<ul>
+								<li v-for="(sfx, index) in data.sfx" :key="index">
+									<code>{{sfx.name}}</code> – {{sfx.description}}
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="container" v-if="data.fx != null && data.fx.length > 0" id="accordion7" role="tablist">
+					<div class="row">
+						<div class="col-12-md" style="margin-bottom: 20px;">
+							<div class="page-header">
+								<h2>
+									<a data-toggle="collapse" data-parent="#accordion5" href="#collapseFX" aria-expanded="true" aria-controls="collapseFX" class="internal-link">
+										Special Effects ({{data.fx.length}})
+									</a>
+								</h2>
+							</div>
+							<div id="collapseFX" class="collapse show" role="tabpanel" aria-labelledby="headingOne">
+								<ul>
+									<li v-for="(fx, index) in data.fx" :key="index">
+										<code>{{fx.name}}</code> – {{fx.description}}
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+
+    <%- include('footer.html') %>
+
+  </div>
+</body>
+
+<script>
+
+	var prefix = "/"
+	var post_list = [];
+	var renders_list = [];
+	var data = {};
+
+	// Functions
+
+	var getReferences = function(){
+		var req = new XMLHttpRequest();
+		req.overrideMimeType("application/json");
+		req.open('GET', "refs/?list=true", true);
+		req.onload  = function() {
+			var jsonResponse = JSON.parse(req.responseText);
+			post_list = jsonResponse.files;
+			console.log(post_list)
+			app.refresh_posts(post_list);
+			// do something with jsonResponse
+		};
+		req.send(null);
+	}
+
+	var getRenders = function(){
+		var req = new XMLHttpRequest();
+		req.overrideMimeType("application/json");
+		req.open('GET', "renders/?list=true", true);
+		req.onload  = function() {
+			var jsonResponse = JSON.parse(req.responseText);
+			renders_list = jsonResponse.files;
+			console.log(renders_list)
+			app.refresh_renders(renders_list);
+			// do something with jsonResponse
+		};
+		req.send(null);
+	}
+
+	var getData = function(){
+		var req = new XMLHttpRequest();
+		req.overrideMimeType("application/json");
+		req.open('GET', "data.json", true);
+		req.onload  = function() {
+			var jsonResponse = JSON.parse(req.responseText);
+			data = jsonResponse;
+			app.data = data;
+			// do something with jsonResponse
+		};
+		req.send(null);
+	}
+
+  // Vue App
+  var app = new Vue({
+    el: '#app',
+    data: {
+			posts: post_list,
+			renders: renders_list,
+			data: data
+    },
+		methods: {
+	    	refresh_posts: function (post_list) {
+				for (var i = 0; i < post_list.length; i++) {
+					var parts = post_list[i].split(".");
+					if(parts[parts.length - 1] != "png" && parts[parts.length - 1] != "jpg" && parts[parts.length - 1] != "gif" ){
+						post_list.splice(i, 1);
+					}
+				}
+				app.posts = post_list.reverse();
+	    	},
+			refresh_renders: function (renders_list) {
+				for (var i = 0; i < renders_list.length; i++) {
+					var parts = renders_list[i].split(".");
+					if(parts[parts.length - 1] != "png" && parts[parts.length - 1] != "jpg" && parts[parts.length - 1] != "gif" ){
+						renders_list.splice(i, 1);
+					}
+				}
+				app.renders = renders_list.reverse();
+	    	},
+			img_url: function(item, folder){
+				return folder + "/" + item;
+			},
+			progress_status: function(status){
+				switch(status){
+					case "in-progress":
+						return "<span class=\"badge badge-primary\">" + status + "</span>";
+					case "done":
+						return "<span class=\"badge badge-success\">" + status + "</span>";
+					case "pending":
+						return "<span class=\"badge badge-warning\">" + status + "</span>";
+				}
+			},
+			get_faction: function(faction, type){
+				if(type != null && type != "" ){
+					if(faction != null && faction != "" ){
+						return "(" + faction + " / " + type + ")";
+					} else {
+						return "(" + type + ")";
+					}
+				}
+			},
+			completed_tasks: function(tasks){
+				var completed = 0;
+				for (let index = 0; index < tasks.length; index++) {
+					if(tasks[index].done == true){
+						completed = completed + 1;
+					}
+				}
+				return completed + "/" + tasks.length;
+			}
+	  },
+		beforeCreate() {
+			getReferences();
+			getRenders();
+			getData();
+		}
+  })
+
+	// Un-collapse acordion elements
+	$('#collapseReferences').collapse({ toggle: true });
+	$('#collapseTasks').collapse({ toggle: true });
+	$('#collapseVoiceOver').collapse({ toggle: true });
+
+	//Initialize tooltips
+	$(function () {
+  		$('[data-toggle="tooltip"]').tooltip()
+	})
+</script>
+
+<script src="/Libraries/code/process-links.js"></script>
+
+
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Projects - Codex</title>
+	<%- include('../views/includes.html') %>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="/libraries/code/moment.min.js"></script>
+  <link rel="stylesheet" href="/libraries/code/font-awesome-4.7.0/css/font-awesome.min.css">
+<style>
+		.project-links {
+			position: absolute;
+    	bottom: 20px;
+		}
+		.circle {
+			border-radius: 50%;
+			width: 10px;
+			height: 10px;
+			margin-top: 10px;
+			margin-left: 10px;
+			/* width and height can be anything, as long as they're equal */
+		}
+		.badge-in-progress {background-color: #005AD2; }
+		.badge-done {background-color: #4AAF45; }
+		.badge-broken {background-color: #D03B3B; }
+		.badge-archived {background-color: #EC9E34; }
+		.pull-left { float: left; }
+		.pull-right { float: right; }
+		.clearfix {clear: both; }
+
+  </style>
+
+</head>
+
+<body>
+  <div id="app">
+    <%- include('../views/nav.html') %>
+    <div class="container">
+
+    </div>
+  </div>
+</body>
+
+
+<script src="/Libraries/code/process-links.js"></script>
+
+</html>

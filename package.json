@@ -1,6 +1,6 @@
 {
-  "name": "codex-classic-theme",
-  "version": "1.0.0",
+  "name": "@jamesperet/codex-classic-theme",
+  "version": "0.1.0",
   "description": "Classic theme for jamesperet/codex-server",
   "main": "index.js",
   "scripts": {

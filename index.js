@@ -1,7 +1,7 @@
 class ClassicTheme {
     
-    constructor(program, config){
-        this.program = program;
+    constructor(server, config){
+        this.server = server;
         this.config = config;
         this.module_name = "Classic Theme";
     }

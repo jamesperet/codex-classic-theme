@@ -1,0 +1,112 @@
+.internal-link { color: #6588CD;}
+
+.centered { text-align: center; }
+.jumbotron { padding: 2rem 1rem;}
+.page-header h2 {padding-bottom: 10px; border-bottom: 1px solid rgba(0,0,0,.1);}
+.row {display: flex;}
+.row.first {margin-top: 100px;}
+.fixed-top { position: fixed; top: 0px; width: 100%; left: 0px; background-color: #F4F4F7; z-index: 1000000;}
+.col, .col-1-md, .col-2-md, .col-3-md, c.ol-4-md, .col-5-md, .col-6-md, .col-7-md, .col-8-md, .col-9-md, .col-10-md, .col-11-md, .col-12-md {flex-grow: 1;}
+.col-1-sm, .col-2-sm, .col-3-sm, .col-4-sm, .col-5-sm, .col-6-sm, .col-7-sm, .col-8-sm, .col-9-sm, .col-10-sm, .col-11-sm, .col-12-sm {flex-grow: 1;}
+table {
+  border: 1px solid #eceeef;
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 1rem;
+  border-collapse: collapse;
+  background-color: transparent;
+}
+tbody {
+    display: table-row-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+td, th {
+    padding: .75rem;
+    vertical-align: top;
+    border-top: 1px solid #eceeef;
+}
+td, th {
+    text-align: left;
+    border: 1px solid #eceeef;
+}
+
+.justify-content-center {
+    -webkit-box-pack: center!important;
+    -webkit-justify-content: center!important;
+    -ms-flex-pack: center!important;
+    justify-content: center!important;
+}
+
+@media (min-width: 576px){
+  .row {
+      margin-right: 15px;
+      margin-left: 15px
+    }
+}
+
+img {
+  max-width: 100%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hljs { white-space: pre-wrap; }
+
+.favcon-link {
+	list-style-type: none;
+    margin-left: -22px;
+}
+.favcon-link img {
+	display: inline;
+  margin-top: -4px;
+  margin-right: 4px;
+}
+
+.badge-default {
+    background-color: #636c72;
+}
+.badge-primary, .badge-in-progress {
+    background-color: #0275d8;
+}
+.badge-success, .badge-done {
+    background-color: #5cb85c;
+}
+.badge-info {
+    background-color: #5bc0de;
+}
+.badge-warning {
+    background-color: #f0ad4e;
+}
+.badge-danger {
+    background-color: #d9534f;
+}
+
+.badge {
+    display: inline-block;
+    padding: .25em .4em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25rem;
+}
+
+table img {
+    max-width: 100%;
+    display: inline;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+li p {
+    margin-bottom: 0px;
+}
+
+.col-12-md h1 {
+    margin-bottom: 25px;
+}
